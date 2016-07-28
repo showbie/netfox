@@ -36,7 +36,7 @@ public class NFXProtocol: NSURLProtocol
             }
 
             for ignoredURL in NFX.sharedInstance().getIgnoredURLs() {
-                if url.absoluteString.hasPrefix(ignoredURL) {
+                if url.absoluteString.containsString(ignoredURL) {
                     return false
                 }
             }

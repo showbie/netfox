@@ -16,14 +16,15 @@ class NFXRawBodyDetailsController: NFXGenericBodyDetailsController
     {
         super.viewDidLoad()
         
-        self.title = "Body details"
+        title = "Body details"
         
-        self.bodyView.frame = CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame))
-        self.bodyView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
-        self.bodyView.backgroundColor = UIColor.clearColor()
-        self.bodyView.textColor = UIColor.NFXGray44Color()
-        self.bodyView.editable = false
-        self.bodyView.font = UIFont.NFXFont(13)
+        bodyView.frame = CGRectMake(0, 0, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame))
+        bodyView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
+        bodyView.backgroundColor = UIColor.clearColor()
+        bodyView.textColor = UIColor.NFXGray44Color()
+        bodyView.editable = false
+        bodyView.selectable = true
+        bodyView.font = UIFont.NFXFont(11)
         
         switch bodyType {
             case .REQUEST:

@@ -56,6 +56,18 @@ class NFXDetailsController: NFXGenericController, MFMailComposeViewControllerDel
         
     }
     
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        
+        for scrollView in [infoView, requestView, responseView] {
+            scrollView.frame = CGRectMake(0, 44, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame) - 44)
+            
+            if let textLabel = scrollView.subviews.filter({ $0 is UILabel }).first as? UILabel {
+                textLabel.preferredMaxLayoutWidth = CGRectGetWidth(scrollView.frame) - 40
+            }
+        }
+    }
+    
     
     func createHeaderButton(title: String, x: CGFloat, selector: Selector) -> UIButton
     {
@@ -74,40 +86,51 @@ class NFXDetailsController: NFXGenericController, MFMailComposeViewControllerDel
     
     func createDetailsView(content: NSAttributedString, forView: EDetailsView) -> UIScrollView
     {
-        var scrollView: UIScrollView
-        scrollView = UIScrollView()
+        var scrollView = UIScrollView()
         scrollView.frame = CGRectMake(0, 44, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame) - 44)
         scrollView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
         scrollView.autoresizesSubviews = true
         scrollView.backgroundColor = UIColor.clearColor()
         
-        var textLabel: UILabel
-        textLabel = UILabel()
-        textLabel.frame = CGRectMake(20, 20, CGRectGetWidth(scrollView.frame) - 40, CGRectGetHeight(scrollView.frame) - 20);
+        var textLabel = UILabel()
+        textLabel.translatesAutoresizingMaskIntoConstraints = false
         textLabel.font = UIFont.NFXFont(13)
         textLabel.textColor = UIColor.NFXGray44Color()
         textLabel.numberOfLines = 0
         textLabel.attributedText = content
-        textLabel.sizeToFit()
         scrollView.addSubview(textLabel)
         
-        var moreButton: UIButton
-        moreButton = UIButton.init(frame: CGRectMake(20, CGRectGetMaxY(textLabel.frame) + 10, CGRectGetWidth(scrollView.frame) - 40, 40))
-        moreButton.backgroundColor = UIColor.NFXGray44Color()
-        
-        if ((forView == EDetailsView.REQUEST) && (self.selectedModel.requestBodyLength > 1024)) {
-            moreButton.setTitle("Show request body", forState: .Normal)
-            moreButton.addTarget(self, action: Selector("requestBodyButtonPressed"), forControlEvents: .TouchUpInside)
+        textLabel.topAnchor.constraintEqualToAnchor(scrollView.topAnchor, constant: 20).active = true
+        textLabel.leadingAnchor.constraintEqualToAnchor(scrollView.leadingAnchor, constant: 20).active = true
+        textLabel.trailingAnchor.constraintEqualToAnchor(scrollView.trailingAnchor, constant: -20).active = true
+                
+        if forView == EDetailsView.REQUEST || forView == EDetailsView.RESPONSE {
+            var moreButton = UIButton(type: .Custom)
+            moreButton.translatesAutoresizingMaskIntoConstraints = false
+            moreButton.backgroundColor = UIColor.NFXGray44Color()
+                        
+            if forView == EDetailsView.REQUEST {
+                moreButton.setTitle("Show request body", forState: .Normal)
+                moreButton.addTarget(self, action: Selector("requestBodyButtonPressed"), forControlEvents: .TouchUpInside)
+                
+            } else if forView == EDetailsView.RESPONSE {
+                moreButton.setTitle("Show response body", forState: .Normal)
+                moreButton.addTarget(self, action: Selector("responseBodyButtonPressed"), forControlEvents: .TouchUpInside)
+            }
+
             scrollView.addSubview(moreButton)
             scrollView.contentSize = CGSizeMake(textLabel.frame.width, CGRectGetMaxY(moreButton.frame))
 
-        } else if ((forView == EDetailsView.RESPONSE) && (self.selectedModel.responseBodyLength > 1024)) {
-            moreButton.setTitle("Show response body", forState: .Normal)
-            moreButton.addTarget(self, action: Selector("responseBodyButtonPressed"), forControlEvents: .TouchUpInside)
-            scrollView.addSubview(moreButton)
-            scrollView.contentSize = CGSizeMake(textLabel.frame.width, CGRectGetMaxY(moreButton.frame))
+            moreButton.topAnchor.constraintEqualToAnchor(textLabel.bottomAnchor, constant: 10).active = true
+            moreButton.bottomAnchor.constraintEqualToAnchor(scrollView.bottomAnchor, constant: -20).active = true
+            moreButton.leadingAnchor.constraintEqualToAnchor(scrollView.leadingAnchor, constant: 20).active = true
+            moreButton.trailingAnchor.constraintEqualToAnchor(scrollView.trailingAnchor, constant: -20).active = true
+
+            moreButton.heightAnchor.constraintEqualToConstant(40).active = true
+        }
+        else {
+            textLabel.bottomAnchor.constraintEqualToAnchor(scrollView.bottomAnchor).active = true
             
-        } else {
             scrollView.contentSize = CGSizeMake(textLabel.frame.width, CGRectGetMaxY(textLabel.frame))
         }
         
@@ -243,10 +266,8 @@ class NFXDetailsController: NFXGenericController, MFMailComposeViewControllerDel
 
         if (object.requestBodyLength == 0) {
             tempString += "Request body is empty\n"
-        } else if (object.requestBodyLength > 1024) {
-            tempString += "Too long to show. If you want to see it, please tap the following button\n"
         } else {
-            tempString += "\(object.getRequestBody())\n"
+            tempString += "Tap the button to view the body\n"
         }
         
         return formatNFXString(tempString)
@@ -276,10 +297,8 @@ class NFXDetailsController: NFXGenericController, MFMailComposeViewControllerDel
 
         if (object.responseBodyLength == 0) {
             tempString += "Response body is empty\n"
-        } else if (object.responseBodyLength > 1024) {
-            tempString += "Too long to show. If you want to see it, please tap the following button\n"
         } else {
-            tempString += "\(object.getResponseBody())\n"
+            tempString += "Tap the button to view the body\n"
         }
         
         return formatNFXString(tempString)

@@ -109,7 +109,7 @@ extension UIFont
 {
     class func NFXFont(size: CGFloat) -> UIFont
     {
-        return UIFont(name: "HelveticaNeue", size: size)!
+        return UIFont(name: "Courier", size: size)!
     }
     
     class func NFXFontBold(size: CGFloat) -> UIFont
