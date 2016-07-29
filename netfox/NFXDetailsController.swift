@@ -108,7 +108,7 @@ class NFXDetailsController: NFXGenericController, MFMailComposeViewControllerDel
             var moreButton = UIButton(type: .Custom)
             moreButton.translatesAutoresizingMaskIntoConstraints = false
             moreButton.backgroundColor = UIColor.NFXGray44Color()
-                        
+            
             if forView == EDetailsView.REQUEST {
                 moreButton.setTitle("Show request body", forState: .Normal)
                 moreButton.addTarget(self, action: Selector("requestBodyButtonPressed"), forControlEvents: .TouchUpInside)

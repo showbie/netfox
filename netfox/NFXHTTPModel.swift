@@ -187,15 +187,15 @@ class NFXHTTPModel: NSObject
     
     func getShortTypeFrom(contentType: String) -> HTTPModelShortType
     {
-        if contentType == "application/json" {
+        if contentType.hasPrefix("application/json") {
             return .JSON
         }
         
-        if (contentType == "application/xml") || (contentType == "text/xml")  {
+        if contentType.hasPrefix("application/xml") || contentType.hasPrefix("text/xml")  {
             return .XML
         }
         
-        if contentType == "text/html" {
+        if contentType.hasPrefix("text/html") {
             return .HTML
         }
         
