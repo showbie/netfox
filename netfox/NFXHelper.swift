@@ -122,9 +122,10 @@ extension NSURLRequest
 {
     func getNFXURL() -> String
     {
-        if (URL != nil) {
-            return URL!.absoluteString;
-        } else {
+        if let URL = URL {
+            return URL.absoluteString!
+        }
+        else {
             return "-"
         }
     }

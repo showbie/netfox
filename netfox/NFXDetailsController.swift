@@ -32,15 +32,15 @@ class NFXDetailsController: NFXGenericController, MFMailComposeViewControllerDel
         
         self.title = "Details"
         
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Action, target: self, action: Selector("actionButtonPressed"))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Action, target: self, action: #selector(NFXDetailsController.actionButtonPressed))
         
-        self.infoButton = createHeaderButton("Info", x: 0, selector: Selector("infoButtonPressed"))
+        self.infoButton = createHeaderButton("Info", x: 0, selector: #selector(NFXDetailsController.infoButtonPressed))
         self.view.addSubview(self.infoButton)
         
-        self.requestButton = createHeaderButton("Request", x: CGRectGetMaxX(self.infoButton.frame), selector: Selector("requestButtonPressed"))
+        self.requestButton = createHeaderButton("Request", x: CGRectGetMaxX(self.infoButton.frame), selector: #selector(NFXDetailsController.requestButtonPressed))
         self.view.addSubview(self.requestButton)
         
-        self.responseButton = createHeaderButton("Response", x: CGRectGetMaxX(self.requestButton.frame), selector: Selector("responseButtonPressed"))
+        self.responseButton = createHeaderButton("Response", x: CGRectGetMaxX(self.requestButton.frame), selector: #selector(NFXDetailsController.responseButtonPressed))
         self.view.addSubview(self.responseButton)
 
         self.infoView = createDetailsView(getInfoStringFromObject(self.selectedModel), forView: .INFO)
@@ -86,13 +86,13 @@ class NFXDetailsController: NFXGenericController, MFMailComposeViewControllerDel
     
     func createDetailsView(content: NSAttributedString, forView: EDetailsView) -> UIScrollView
     {
-        var scrollView = UIScrollView()
+        let scrollView = UIScrollView()
         scrollView.frame = CGRectMake(0, 44, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame) - 44)
         scrollView.autoresizingMask = [.FlexibleWidth, .FlexibleHeight]
         scrollView.autoresizesSubviews = true
         scrollView.backgroundColor = UIColor.clearColor()
         
-        var textLabel = UILabel()
+        let textLabel = UILabel()
         textLabel.translatesAutoresizingMaskIntoConstraints = false
         textLabel.font = UIFont.NFXFont(13)
         textLabel.textColor = UIColor.NFXGray44Color()
@@ -105,17 +105,17 @@ class NFXDetailsController: NFXGenericController, MFMailComposeViewControllerDel
         textLabel.trailingAnchor.constraintEqualToAnchor(scrollView.trailingAnchor, constant: -20).active = true
                 
         if forView == EDetailsView.REQUEST || forView == EDetailsView.RESPONSE {
-            var moreButton = UIButton(type: .Custom)
+            let moreButton = UIButton(type: .Custom)
             moreButton.translatesAutoresizingMaskIntoConstraints = false
             moreButton.backgroundColor = UIColor.NFXGray44Color()
             
             if forView == EDetailsView.REQUEST {
                 moreButton.setTitle("Show request body", forState: .Normal)
-                moreButton.addTarget(self, action: Selector("requestBodyButtonPressed"), forControlEvents: .TouchUpInside)
+                moreButton.addTarget(self, action: #selector(NFXDetailsController.requestBodyButtonPressed), forControlEvents: .TouchUpInside)
                 
             } else if forView == EDetailsView.RESPONSE {
                 moreButton.setTitle("Show response body", forState: .Normal)
-                moreButton.addTarget(self, action: Selector("responseBodyButtonPressed"), forControlEvents: .TouchUpInside)
+                moreButton.addTarget(self, action: #selector(NFXDetailsController.responseBodyButtonPressed), forControlEvents: .TouchUpInside)
             }
 
             scrollView.addSubview(moreButton)
