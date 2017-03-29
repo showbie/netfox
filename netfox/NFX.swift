@@ -43,13 +43,13 @@ public class NFX: NSObject
         }
     }
     
-    private var started: Bool = false
-    private var presented: Bool = false
-    private var enabled: Bool = false
-    private var selectedGesture: ENFXGesture = .shake
-    private var ignoredURLs = [String]()
-    private var filters = [Bool]()
-    private var lastVisitDate: NSDate = NSDate()
+    fileprivate var started = false
+    fileprivate var presented = false
+    fileprivate var enabled = false
+    fileprivate var selectedGesture: ENFXGesture = .shake
+    fileprivate var ignoredURLs = [String]()
+    fileprivate var filters = [Bool]()
+    fileprivate var lastVisitDate = Date()
 
     @objc public func start()
     {
@@ -69,7 +69,7 @@ public class NFX: NSObject
         showMessage("Stopped!")
     }
     
-    private func showMessage(msg: String) {
+    fileprivate func showMessage(_ msg: String) {
         print("netfox \(nfxVersion) - [https://github.com/kasketis/netfox]: \(msg)")
     }
     
@@ -88,14 +88,14 @@ public class NFX: NSObject
         self.enabled = false
     }
     
-    private func register()
+    fileprivate func register()
     {
-        NSURLProtocol.registerClass(NFXProtocol)
+        URLProtocol.registerClass(NFXProtocol.self)
     }
     
-    private func unregister()
+    fileprivate func unregister()
     {
-        NSURLProtocol.unregisterClass(NFXProtocol)
+        URLProtocol.unregisterClass(NFXProtocol.self)
     }
     
     func motionDetected()
@@ -109,7 +109,7 @@ public class NFX: NSObject
         }
     }
     
-    @objc public func setGesture(gesture: ENFXGesture)
+    @objc public func setGesture(_ gesture: ENFXGesture)
     {
         self.selectedGesture = gesture
     }
@@ -132,17 +132,17 @@ public class NFX: NSObject
         }
     }
     
-    @objc public func ignoreURL(url: String)
+    @objc public func ignoreURL(_ url: String)
     {
         self.ignoredURLs.append(url)
     }
     
-    internal func getLastVisitDate() -> NSDate
+    internal func getLastVisitDate() -> Date
     {
         return self.lastVisitDate
     }
     
-    private func showNFX()
+    fileprivate func showNFX()
     {
         if self.presented {
             return
@@ -154,32 +154,32 @@ public class NFX: NSObject
         listController = NFXListController()
         
         navigationController = UINavigationController(rootViewController: listController)
-        navigationController!.navigationBar.translucent = false
+        navigationController!.navigationBar.isTranslucent = false
         navigationController!.navigationBar.tintColor = UIColor.NFXOrangeColor()
         navigationController!.navigationBar.barTintColor = UIColor.NFXStarkWhiteColor()
         navigationController!.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName : UIColor.NFXOrangeColor()]
         
         self.presented = true
-        presentingViewController?.presentViewController(navigationController!, animated: true, completion: nil)
+        presentingViewController?.present(navigationController!, animated: true, completion: nil)
     }
     
-    private var presentingViewController: UIViewController?
+    fileprivate var presentingViewController: UIViewController?
     {
-        let rootViewController = UIApplication.sharedApplication().keyWindow?.rootViewController
+        let rootViewController = UIApplication.shared.keyWindow?.rootViewController
         return rootViewController?.presentedViewController ?? rootViewController
     }
     
-    private func hideNFX()
+    fileprivate func hideNFX()
     {
         if !self.presented {
             return
         }
         
-        NSNotificationCenter.defaultCenter().postNotificationName("NFXDeactivateSearch", object: nil)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "NFXDeactivateSearch"), object: nil)
         
-        presentingViewController?.dismissViewControllerAnimated(true, completion: { () -> Void in
+        presentingViewController?.dismiss(animated: true, completion: { () -> Void in
             self.presented = false
-            self.lastVisitDate = NSDate()
+            self.lastVisitDate = Date()
         })
     }
     
@@ -187,11 +187,11 @@ public class NFX: NSObject
     {
         NFXHTTPModelManager.sharedInstance.clear()
         do {
-            let documentsPath = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.AllDomainsMask, true).first!
-            let filePathsArray = try NSFileManager.defaultManager().subpathsOfDirectoryAtPath(documentsPath)
+            let documentsPath = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.allDomainsMask, true).first!
+            let filePathsArray = try FileManager.default.subpathsOfDirectory(atPath: documentsPath)
             for filePath in filePathsArray {
                 if filePath.hasPrefix("nfx") {
-                    try NSFileManager.defaultManager().removeItemAtPath((documentsPath as NSString).stringByAppendingPathComponent(filePath))
+                    try FileManager.default.removeItem(atPath: (documentsPath as NSString).appendingPathComponent(filePath))
                 }
             }
             
@@ -208,7 +208,7 @@ public class NFX: NSObject
         return self.selectedGesture
     }
     
-    func cacheFilters(selectedFilters: [Bool])
+    func cacheFilters(_ selectedFilters: [Bool])
     {
         self.filters = selectedFilters
     }
@@ -216,7 +216,7 @@ public class NFX: NSObject
     func getCachedFilters() -> [Bool]
     {
         if self.filters.count == 0 {
-            self.filters = [Bool](count: HTTPModelShortType.allValues.count, repeatedValue: true)
+            self.filters = [Bool](repeating: true, count: HTTPModelShortType.allValues.count)
         }
         return self.filters
     }
