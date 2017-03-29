@@ -213,7 +213,7 @@ class NFXHTTPModel: NSObject
             do {
                 let rawJsonData = try NSJSONSerialization.JSONObjectWithData(rawData, options: [])
                 let prettyPrintedString = try NSJSONSerialization.dataWithJSONObject(rawJsonData, options: [.PrettyPrinted])
-                return NSString(data: prettyPrintedString, encoding: NSUTF8StringEncoding) as? String
+                return NSString(data: prettyPrintedString, encoding: NSUTF8StringEncoding)
             } catch {
                 return nil
             }
